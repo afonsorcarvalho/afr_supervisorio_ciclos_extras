@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template completo do Laudo de Liberação (standalone, sem inherit para evitar problemas de main) -->
+    <template id="report_laudo_liberacao_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <style>
+                        .laudo-title {
+                            font-size: 14px;
+                            font-weight: bold;
+                            margin: 5px 0;
+                            text-align: center;
+                        }
+                        .laudo-subtitle {
+                            font-size: 12px;
+                            font-weight: bold;
+                            margin: 2px 0 10px 0;
+                            text-align: center;
+                        }
+                        .laudo-label {
+                            font-weight: bold;
+                        }
+                        .table-sm th, .table-sm td {
+                            padding: 0.3rem;
+                            font-size: 12px;
+                        }
+                        .table-statistics {
+                            font-size: 11px;
+                        }
+                        .section-title {
+                            border: 1px solid rgb(0, 0, 0);
+                            border-radius: 8px;
+                            padding: 5px;
+                            margin-bottom: 5px;
+                            margin-top: 15px;
+                        }
+                    </style>
+
+                    <div class="page">
+                        <!-- Cabeçalho -->
+                        <h2 class="text-center">LAUDO DE LIBERAÇÃO DE PRODUTOS ESTERILIZADOS</h2>
+                        <!-- <h3 class="text-center">VIA INDICADOR BIOLÓGICO PARA COMERCIALIZAÇÃO</h3> -->
+
+                        <!-- Dados básicos -->
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Ciclo:</strong> <span t-field="o.name"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Cod. Carga:</strong> <span t-field="o.batch_number"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Equipamento:</strong> <span t-field="o.equipment_id"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Duração (HH:mm):</strong> <span t-field="o.duration" t-options='{"widget": "float_time"}'/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Data início:</strong> <span t-field="o.start_date"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Data fim:</strong> <span t-field="o.end_date"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Status:</strong> <span t-field="o.state"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Ciclo selecionado:</strong> <span t-field="o.cycle_features_id"/>
+                            </div>
+                        </div>
+
+                        <!-- Indicador biológico -->
+                        <div class="row mt-4" t-if="o.ib_lote">
+                            <div class="col-12">
+                                <h5 class="mb-3">Indicador Biológico</h5>
+                            </div>
+                        </div>
+                        <div class="row" t-if="o.ib_lote">
+                            <div class="col-2">
+                                <strong>Lote IB:</strong>
+                            </div>
+                            <div class="col-4">
+                                <span t-field="o.ib_lote"/>
+                            </div>
+                            <div class="col-2">
+                                <strong>Marca:</strong>
+                            </div>
+                            <div class="col-4">
+                                <span t-field="o.ib_marca"/>
+                            </div>
+                        </div>
+                        <div class="row" t-if="o.ib_lote">
+                            <div class="col-2">
+                                <strong>Modelo:</strong>
+                            </div>
+                            <div class="col-4">
+                                <span t-field="o.ib_modelo"/>
+                            </div>
+                            <div class="col-2">
+                                <strong>Resultado:</strong>
+                            </div>
+                            <div class="col-4">
+                                <t t-esc="o.ib_resultado"/>
+                            </div>
+                        </div>
+                        <div class="row" t-if="o.ib_lote">
+                            <div class="col-2">
+                                <strong>Início Incubação:</strong>
+                            </div>
+                            <div class="col-4">
+                                <span t-field="o.ib_data_inicio"/>
+                            </div>
+                            <div class="col-2">
+                                <strong>Fim Incubação:</strong>
+                            </div>
+                            <div class="col-4">
+                                <span t-field="o.ib_data_fim"/>
+                            </div>
+                        </div>
+
+                        <!-- Observações -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="row mt-2">
+                                    <div class="col-12" t-if="o.notes">
+                                        <strong>Observações:</strong>
+                                        <div t-field="o.notes"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Materiais filtrados (somente selecionados no wizard) -->
+                        <t t-set="show_materials" t-value="material_lines_filtered if material_lines_filtered else []"/>
+                        <div class="row mt-4" t-if="show_materials and len(show_materials) > 0">
+                            <div class="col-12">
+                                <h5 class="mb-3 text-center section-title">
+                                    MATERIAIS ESTERILIZADOS
+                                </h5>
+                                <table class="table table-bordered table-sm">
+                                    <thead style="background-color: #f8f9fa;">
+                                        <tr>
+                                            <th class="text-center">Item</th>
+                                            <th>Produto</th>
+                                            <th>Fabricante</th>
+                                            <th>Lote</th>
+                                            <th class="text-center">Qtd</th>
+                                            <th>Unidade</th>
+                                            <!-- <th>Validade</th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="item_num" t-value="0"/>
+                                        <t t-foreach="show_materials" t-as="mat">
+                                            <t t-set="item_num" t-value="item_num + 1"/>
+                                            <tr>
+                                                <td class="text-center"><t t-esc="item_num"/></td>
+                                                <td><span t-field="mat.material_descricao"/></td>
+                                                <td><span t-field="mat.fabricante_nome"/></td>
+                                                <td><span t-field="mat.lote"/></td>
+                                                <td class="text-center"><span t-field="mat.quantidade"/></td>
+                                                <td>
+                                                    <t t-if="mat.unidade == 'caixa'">Caixa</t>
+                                                    <t t-elif="mat.unidade == 'unidade'">Unidade</t>
+                                                    <t t-elif="mat.unidade == 'pacote'">Pacote</t>
+                                                    <t t-elif="mat.unidade == 'envelope'">Envelope</t>
+                                                    <t t-elif="mat.unidade == 'kit'">Kit</t>
+                                                    <t t-else="">Outro</t>
+                                                </td>
+                                                <!-- <td><span t-field="mat.validade"/></td> -->
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Caso não haja materiais, mostra aviso -->
+                        <div class="row mt-4" t-if="not show_materials or len(show_materials) == 0">
+                            <div class="col-12">
+                                <div class="alert alert-warning text-center">
+                                    <strong>Atenção:</strong> Nenhum material foi selecionado para este laudo.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estatísticas do ciclo -->
+                        <t t-set="cycle_stats" t-value="o.get_cycle_statistics_for_report()"/>
+                        <div class="row mt-3 mb-3" t-if="cycle_stats and cycle_stats.get('rows') and len(cycle_stats.get('rows')) > 0">
+                            <div class="col-12">
+                                 <h5 class="mb-3 text-center section-title">ESTATÍSTICAS DO CICLO</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-sm table-statistics">
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2">Fase</th>
+                                                <th rowspan="2">Duração(mm:ss)</th>
+                                                <t t-foreach="cycle_stats.get('variables')" t-as="v">
+                                                    <th class="text-center" t-att-colspan="3"><t t-esc="v"/></th>
+                                                </t>
+                                            </tr>
+                                            <tr>
+                                                <t t-foreach="cycle_stats.get('variables')" t-as="v">
+                                                    <th class="text-center">min</th>
+                                                    <th class="text-center">max</th>
+                                                    <th class="text-center">média</th>
+                                                </t>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="cycle_stats.get('rows')" t-as="r">
+                                                <tr>
+                                                    <td t-esc="r.get('fase')"/>
+                                                    <td class="text-center" t-esc="(r.get('duracao') if r.get('duracao') else '-')"/>
+                                                    <t t-foreach="cycle_stats.get('variables')" t-as="v">
+                                                        <t t-set="m" t-value="r.get('metrics').get(v) if r.get('metrics') else {}"/>
+                                                        <td class="text-end" t-esc="(('%.2f' % m.get('min')) if (m is not None and m.get('min') is not None) else '-')"/>
+                                                        <td class="text-end" t-esc="(('%.2f' % m.get('max')) if (m is not None and m.get('max') is not None) else '-')"/>
+                                                        <td class="text-end" t-esc="(('%.2f' % m.get('media')) if (m is not None and m.get('media') is not None) else '-')"/>
+                                                    </t>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mensagem quando não há estatísticas -->
+                        <div class="row mt-3 mb-3" t-if="not cycle_stats or not cycle_stats.get('rows') or len(cycle_stats.get('rows')) == 0">
+                            <div class="col-12">
+                                <div class="alert alert-info text-center">
+                                    <em>Nenhuma estatística disponível para este ciclo.</em>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico do ciclo -->
+                        <div class="row mt-3 mb-1">
+                           <div class="col-12 text-center">
+                             <h5 class="mb-3 text-center section-title">GRÁFICO DO CICLO</h5>
+                            <t t-if="o.cycle_graph">
+                                <img class="mr-5" t-attf-src="data:image/png;charset=utf-8;base64,{{o.cycle_graph}}" width="80%"/>
+                            </t>
+                            <t t-else="">
+                                <p>Nenhum gráfico disponível para este ciclo.</p>
+                            </t>
+                           </div>
+                        </div>
+
+                        <!-- Conclusão normativa -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5 class="mb-3 text-center section-title">CONCLUSÃO</h5>                        
+                                <p>
+                                    Os materiais relacionados neste laudo ficam liberados para comercialização, 
+                                    considerando o resultado do indicador biológico (com registros anexos), os parâmetros
+                                    físicos demonstrados e a aderência às normas RDC 291/2019 (ANVISA), ISO 11135:2018 
+                                    e ISO 11138-2:2016, aqui documentados.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Assinatura / aprovação -->
+                        <div class="row mt-5">
+                            <!-- <div class="col-6 text-left">
+                                <t t-if="o.notes">
+                                   * Observações:
+                                     <span t-field="o.notes" /><br/>
+                                </t>
+                            </div> -->
+                            <div class="col-6 text-center">
+                                ________________________________________<br/>
+                                Garantia de qualidade<br/>
+                                Aprovação
+                            </div>
+                        </div>
+
+                        <!-- Fotos em anexo -->
+                        <t t-if="o.fotos_ids">
+                            <t t-foreach="o.fotos_ids" t-as="foto">
+                                <div style="page-break-before: always;">
+                                    <div class="row mt-4">
+                                        <div class="col-12 text-center">
+                                              <h5 class="mb-3 text-center section-title"><span t-field="foto.titulo"/></h5>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <table class="table table-sm table-bordered">
+                                                <tr t-if="foto.legenda">
+                                                    <td class="font-weight-bold bg-light">Legenda:</td>
+                                                    <td><span t-field="foto.legenda"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="font-weight-bold bg-light">Data:</td>
+                                                    <td><span t-field="foto.data_criacao"/></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mt-4">
+                                        <div class="col-12 text-center">
+                                            <img t-if="foto.imagem" t-attf-src="data:image/png;base64,{{foto.imagem}}" 
+                                                 style="max-width: 100%; max-height: 800px; border: 1px solid #ddd; padding: 10px; background: white;"
+                                                 t-att-alt="foto.titulo"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mt-3">
+                                        <div class="col-12 text-center text-muted">
+                                            <small>
+                                                Foto <span t-esc="foto_index + 1"/> de <span t-esc="len(o.fotos_ids)"/>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Ação do Report do Laudo -->
+    <record id="report_laudo_liberacao_action" model="ir.actions.report">
+        <field name="name">Laudo de Liberação de Produtos</field>
+        <field name="model">afr.supervisorio.ciclos</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">afr_supervisorio_ciclos_extras.report_laudo_liberacao_template</field>
+        <field name="report_file">afr_supervisorio_ciclos_extras.report_laudo_liberacao_template</field>
+        <field name="print_report_name">'Laudo_Liberacao_%s' % (object.name)</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+    
+    <!-- Ação server para abrir wizard do laudo -->
+    <record id="action_open_wizard_laudo" model="ir.actions.server">
+        <field name="name">Laudo de Liberação de Produtos</field>
+        <field name="model_id" ref="afr_supervisorio_ciclos.model_afr_supervisorio_ciclos"/>
+        <field name="binding_model_id" ref="afr_supervisorio_ciclos.model_afr_supervisorio_ciclos"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_print_laudo_wizard()</field>
+    </record>
+
+</odoo>
+
