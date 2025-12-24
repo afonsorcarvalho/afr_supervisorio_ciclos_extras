@@ -12,6 +12,7 @@
     'depends': [
         'base',
         'afr_supervisorio_ciclos',
+        'website',
     ],
     'data': [
         'security/ir.model.access.csv',

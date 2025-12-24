@@ -35,13 +35,39 @@
                             margin-bottom: 5px;
                             margin-top: 15px;
                         }
+                        .qr-code-container {
+                            position: absolute;
+                            top: 20px;
+                            right: 20px;
+                            text-align: center;
+                        }
+                        .qr-code-container img {
+                            width: 80px;
+                            height: 80px;
+                        }
+                        .qr-code-label {
+                            font-size: 8px;
+                            margin-top: 5px;
+                            color: #666;
+                        }
+                        .page {
+                            position: relative;
+                            min-height: 100vh;
+                        }
                     </style>
-
+                    
                     <div class="page">
                         <!-- Cabeçalho -->
                         <h2 class="text-center">LAUDO DE LIBERAÇÃO DE PRODUTOS ESTERILIZADOS</h2>
                         <!-- <h3 class="text-center">VIA INDICADOR BIOLÓGICO PARA COMERCIALIZAÇÃO</h3> -->
 
+                        <!-- QR Code para autenticidade (canto superior direito) -->
+                        <t t-set="qr_code_data" t-value="qr_codes.get(o.id)"/>
+                        <div class="qr-code-container" t-if="qr_code_data">
+                            <img t-attf-src="data:image/png;base64,{{qr_code_data}}" alt="QR Code Autenticidade"/>
+                            <div class="qr-code-label">Verificar autenticidade</div>
+                        </div>
+                        
                         <!-- Dados básicos -->
                         <div class="row">
                             <div class="col-6">
@@ -51,27 +77,27 @@
                                 <strong>Cod. Carga:</strong> <span t-field="o.batch_number"/>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
                                 <strong>Equipamento:</strong> <span t-field="o.equipment_id"/>
                             </div>
                             <div class="col-6">
                                 <strong>Duração (HH:mm):</strong> <span t-field="o.duration" t-options='{"widget": "float_time"}'/>
                             </div>
-                        </div>
+                                    </div>
                         <div class="row">
                             <div class="col-6">
                                 <strong>Data início:</strong> <span t-field="o.start_date"/>
-                            </div>
+                                    </div>
                             <div class="col-6">
                                 <strong>Data fim:</strong> <span t-field="o.end_date"/>
-                            </div>
+                                    </div>
                         </div>
                         <div class="row">
                             <div class="col-6">
                                 <strong>Status:</strong> <span t-field="o.state"/>
-                            </div>
-                            <div class="col-6">
+                                </div>
+                                <div class="col-6">
                                 <strong>Ciclo selecionado:</strong> <span t-field="o.cycle_features_id"/>
                             </div>
                         </div>
@@ -122,8 +148,8 @@
                             </div>
                             <div class="col-4">
                                 <span t-field="o.ib_data_fim"/>
-                            </div>
-                        </div>
+                                    </div>
+                                    </div>
 
                         <!-- Observações -->
                         <div class="row mt-3">
@@ -146,7 +172,7 @@
                                 </h5>
                                 <table class="table table-bordered table-sm">
                                     <thead style="background-color: #f8f9fa;">
-                                        <tr>
+                                    <tr>
                                             <th class="text-center">Item</th>
                                             <th>Produto</th>
                                             <th>Fabricante</th>
@@ -154,13 +180,13 @@
                                             <th class="text-center">Qtd</th>
                                             <th>Unidade</th>
                                             <!-- <th>Validade</th> -->
-                                        </tr>
-                                    </thead>
-                                    <tbody>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                         <t t-set="item_num" t-value="0"/>
                                         <t t-foreach="show_materials" t-as="mat">
                                             <t t-set="item_num" t-value="item_num + 1"/>
-                                            <tr>
+                                        <tr>
                                                 <td class="text-center"><t t-esc="item_num"/></td>
                                                 <td><span t-field="mat.material_descricao"/></td>
                                                 <td><span t-field="mat.fabricante_nome"/></td>
@@ -172,18 +198,18 @@
                                                     <t t-elif="mat.unidade == 'pacote'">Pacote</t>
                                                     <t t-elif="mat.unidade == 'envelope'">Envelope</t>
                                                     <t t-elif="mat.unidade == 'kit'">Kit</t>
-                                                    <t t-else="">Outro</t>
-                                                </td>
+                                                <t t-else="">Outro</t>
+                                            </td>
                                                 <!-- <td><span t-field="mat.validade"/></td> -->
-                                            </tr>
-                                        </t>
-                                    </tbody>
-                                </table>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
                             </div>
                         </div>
                         <!-- Caso não haja materiais, mostra aviso -->
                         <div class="row mt-4" t-if="not show_materials or len(show_materials) == 0">
-                            <div class="col-12">
+                                <div class="col-12">
                                 <div class="alert alert-warning text-center">
                                     <strong>Atenção:</strong> Nenhum material foi selecionado para este laudo.
                                 </div>
@@ -234,7 +260,7 @@
 
                         <!-- Mensagem quando não há estatísticas -->
                         <div class="row mt-3 mb-3" t-if="not cycle_stats or not cycle_stats.get('rows') or len(cycle_stats.get('rows')) == 0">
-                            <div class="col-12">
+                                <div class="col-12">
                                 <div class="alert alert-info text-center">
                                     <em>Nenhuma estatística disponível para este ciclo.</em>
                                 </div>
@@ -247,8 +273,8 @@
                              <h5 class="mb-3 text-center section-title">GRÁFICO DO CICLO</h5>
                             <t t-if="o.cycle_graph">
                                 <img class="mr-5" t-attf-src="data:image/png;charset=utf-8;base64,{{o.cycle_graph}}" width="80%"/>
-                            </t>
-                            <t t-else="">
+                                </t>
+                                <t t-else="">
                                 <p>Nenhum gráfico disponível para este ciclo.</p>
                             </t>
                            </div>
@@ -292,7 +318,7 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="row">
+                            <div class="row">
                                         <div class="col-12">
                                             <table class="table table-sm table-bordered">
                                                 <tr t-if="foto.legenda">
@@ -312,7 +338,7 @@
                                             <img t-if="foto.imagem" t-attf-src="data:image/png;base64,{{foto.imagem}}" 
                                                  style="max-width: 100%; max-height: 800px; border: 1px solid #ddd; padding: 10px; background: white;"
                                                  t-att-alt="foto.titulo"/>
-                                        </div>
+                                </div>
                                     </div>
                                     
                                     <div class="row mt-3">

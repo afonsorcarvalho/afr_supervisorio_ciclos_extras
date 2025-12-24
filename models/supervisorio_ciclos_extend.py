@@ -1,5 +1,7 @@
 """Extensão do modelo de ciclos para incluir materiais"""
 from odoo import models, fields, api
+import hashlib
+import hmac
 
 
 class SupervisorioCiclosExtend(models.Model):
@@ -58,4 +60,51 @@ class SupervisorioCiclosExtend(models.Model):
                 'active_model': 'afr.supervisorio.ciclos',
             },
         }
+    
+    def _get_laudo_public_token(self, material_line_ids=None):
+        """
+        Gera um token único para acesso público ao laudo
+
+        O token é assinado (HMAC-SHA256) e inclui, além do ciclo, a lista de materiais
+        autorizados para o laudo. Isso impede que alguém altere a URL (ex.: adicionar IDs)
+        e consiga visualizar materiais que não foram selecionados no wizard.
+        
+        Returns:
+            str: Token único para acesso público
+        """
+        self.ensure_one()
+        # Normaliza a lista de materiais para uma representação estável
+        # (ordenação e remoção de duplicados) para que o token seja determinístico.
+        material_line_ids = material_line_ids or []
+        material_line_ids = tuple(sorted({int(x) for x in material_line_ids}))
+
+        secret = self.env["ir.config_parameter"].sudo().get_param("database.secret", "default_secret")
+        token_data = (self.env.cr.dbname, int(self.id), 'laudo_liberacao', material_line_ids)
+        token = hmac.new(
+            secret.encode('utf-8'),
+            repr(token_data).encode('utf-8'),
+            hashlib.sha256
+        ).hexdigest()
+        return token
+    
+    def get_laudo_public_url(self, material_line_ids=None):
+        """
+        Retorna a URL pública para download do laudo
+        
+        Returns:
+            str: URL completa para download público do laudo
+        """
+        self.ensure_one()
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        material_line_ids = material_line_ids or []
+        material_line_ids = [str(int(x)) for x in sorted({int(x) for x in material_line_ids})]
+
+        # Assina o token com o conjunto de materiais
+        token = self._get_laudo_public_token(material_line_ids=[int(x) for x in material_line_ids])
+
+        # Inclui os materiais na URL para o controller público aplicar o mesmo filtro do laudo.
+        # Usamos string CSV para evitar query params repetidos e manter a leitura simples.
+        materials_param = ",".join(material_line_ids)
+        url = f"{base_url}/laudo/liberacao/public/{self.id}?token={token}&materials={materials_param}"
+        return url
 
