@@ -9,15 +9,7 @@
             <!-- Define quais materiais mostrar: filtrados ou todos -->
             <t t-set="material_ids_filter" t-value="data.get('material_line_ids') if (data and 'material_line_ids' in data) else []"/>
             <t t-set="show_materials" t-value="o.env['afr.supervisorio.cycle.materials.lines'].browse(material_ids_filter) if material_ids_filter else o.material_lines_ids"/>
-            
-            <!-- DEBUG -->
-            <div style="background: yellow; padding: 15px; margin: 10px; border: 3px solid red;">
-                <h4 style="color: red;">DEBUG</h4>
-                <p>Data: <t t-esc="data"/></p>
-                <p>material_ids_filter: <t t-esc="material_ids_filter"/></p>
-                <p>Total show_materials: <t t-esc="len(show_materials)"/></p>
-                <p>IDs: <t t-esc="show_materials.ids"/></p>
-            </div>
+            <!-- DEBUG removido: não deve aparecer no PDF do relatório -->
             
             <!-- Seção de Materiais -->
             <div class="row mt-4" t-if="show_materials">
