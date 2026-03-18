@@ -24,6 +24,7 @@ class WizardPrintLaudo(models.TransientModel):
     material_line_ids = fields.Many2many(
         'afr.supervisorio.cycle.materials.lines',
         string='Materiais do Ciclo',
+        domain="[('ciclo_id','=',ciclo_id)]",  # Aplica domínio para mostrar apenas linhas do ciclo atual
         help='Selecione os materiais que deseja incluir no laudo'
     )
     
