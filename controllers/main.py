@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Controller para download público do laudo de liberação
+Controller para download público do laudo de liberação e quadro de assinatura.
 """
 from typing import Any, List, Optional, cast
 
@@ -12,8 +12,118 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
+# Página HTML do quadro de assinatura (canvas + botão Baixar PNG)
+_QUADRO_ASSINATURA_HTML = """<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Quadro de assinatura - Laudo</title>
+    <style>
+        body { font-family: sans-serif; max-width: 500px; margin: 20px auto; padding: 0 15px; }
+        h1 { font-size: 1.2em; }
+        #canvas { border: 1px solid #333; display: block; background: #fff; touch-action: none; cursor: crosshair; }
+        .btns { margin-top: 12px; }
+        .btns button { padding: 8px 16px; margin-right: 8px; cursor: pointer; }
+        .btns a { padding: 8px 16px; margin-right: 8px; cursor: pointer; text-decoration: none; color: #000; border: 1px solid #333; background: #eee; display: inline-block; }
+        p { color: #666; font-size: 0.9em; margin-top: 16px; }
+    </style>
+</head>
+<body>
+    <h1>Assinatura digital</h1>
+    <p>Desenhe sua assinatura no quadro abaixo. Depois clique em &quot;Baixar PNG&quot; e use o arquivo no wizard do laudo (Enviar imagem).</p>
+    <canvas id="canvas" width="450" height="150"></canvas>
+    <div class="btns">
+        <button type="button" id="clear">Limpar</button>
+        <a href="#" id="download">Baixar PNG</a>
+    </div>
+    <script>
+        (function() {
+            var c = document.getElementById('canvas');
+            var ctx = c.getContext('2d');
+            var drawing = false;
+            var last = null;
+            function pos(e) {
+                var r = c.getBoundingClientRect();
+                var touch = e.touches && e.touches[0];
+                var ev = touch || e;
+                return { x: ev.clientX - r.left, y: ev.clientY - r.top };
+            }
+            function start(e) { e.preventDefault(); drawing = true; last = pos(e); }
+            function move(e) {
+                e.preventDefault();
+                if (!drawing || !last) return;
+                var p = pos(e);
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(last.x, last.y);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+                last = p;
+            }
+            function end(e) { e.preventDefault(); drawing = false; last = null; }
+            c.addEventListener('mousedown', start);
+            c.addEventListener('mousemove', move);
+            c.addEventListener('mouseup', end);
+            c.addEventListener('mouseleave', end);
+            c.addEventListener('touchstart', start, { passive: false });
+            c.addEventListener('touchmove', move, { passive: false });
+            c.addEventListener('touchend', end, { passive: false });
+            document.getElementById('clear').onclick = function() {
+                ctx.clearRect(0, 0, c.width, c.height);
+            };
+            document.getElementById('download').onclick = function(e) {
+                e.preventDefault();
+                var data = c.toDataURL('image/png');
+                this.href = data;
+                this.download = 'assinatura_laudo.png';
+            };
+        })();
+    </script>
+</body>
+</html>
+"""
+
+
 class LaudoLiberacaoController(http.Controller):
-    """Controller para acesso público ao laudo de liberação via QR code"""
+    """Controller para acesso público ao laudo de liberação via QR code e quadro de assinatura."""
+
+    @http.route('/laudo/assinatura/quadro', type='http', auth='user', methods=['GET'])
+    def quadro_assinatura(self, **kwargs):
+        """
+        Página com canvas para desenhar assinatura e botão para baixar PNG.
+        Usuário logado desenha, baixa o PNG e envia no wizard (Enviar imagem).
+        """
+        return request.make_response(
+            _QUADRO_ASSINATURA_HTML,
+            headers=[('Content-Type', 'text/html; charset=utf-8')],
+        )
+
+    @http.route('/v/<string:short_code>', type='http', auth='public', methods=['GET'])
+    def short_link_redirect(self, short_code, **kwargs):
+        """
+        Redireciona o link curto de verificação de autenticidade para a URL
+        completa de download do laudo (com token e materiais).
+
+        Args:
+            short_code: Código curto armazenado em afr.laudo.short.link.
+
+        Returns:
+            werkzeug.wrappers.Response: Redirect 302 para a URL do laudo ou 404.
+        """
+        env = cast(Any, request.env)
+        link = env['afr.laudo.short.link'].sudo().search([('short_code', '=', short_code)], limit=1)
+        if not link:
+            _logger.warning(f"Link curto não encontrado: {short_code}")
+            return request.not_found()
+        try:
+            full_url = link.get_full_url()
+            return request.redirect(full_url, code=302)
+        except Exception as e:
+            _logger.error(f"Erro ao resolver link curto {short_code}: {str(e)}", exc_info=True)
+            return request.not_found()
 
     def _parse_material_line_ids(self, raw_value: Any) -> Optional[List[int]]:
         """

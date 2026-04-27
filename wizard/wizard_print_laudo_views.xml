@@ -39,6 +39,30 @@
                                 </tree>
                             </field>
                         </page>
+                        <page string="Assinatura" name="signature">
+                            <div class="alert alert-info" role="alert" style="margin-bottom: 10px;">
+                                <strong>Assinatura no laudo:</strong>
+                                Se o ciclo já foi <strong>assinado eletronicamente</strong> no formulário do ciclo (botão Assinar ciclo),
+                                o PDF do laudo usa <strong>os mesmos dados</strong> do relatório &quot;Impressão de ciclos&quot; (imagem, conselho, CPF, data).
+                                Caso contrário, use abaixo: assinatura automática da empresa, envio de PNG ou quadro de desenho.
+                            </div>
+                            <group>
+                                <field name="signature_type" widget="radio"/>
+                                <field name="signature_image" widget="image" options="{'size': [200, 80]}"
+                                       attrs="{'invisible': [('signature_type', '=', 'auto')], 'required': [('signature_type', 'in', ['upload', 'draw'])]}"/>
+                                <field name="signer_name" placeholder="Nome do responsável"/>
+                                <field name="signer_title" placeholder="Ex.: Garantia de qualidade"/>
+                                <field name="signature_date"/>
+                            </group>
+                            <div class="mt-3" attrs="{'invisible': [('signature_type', '!=', 'draw')]}">
+                                <a href="/laudo/assinatura/quadro" target="_blank" class="btn btn-link">
+                                    <i class="fa fa-pencil"/> Abrir quadro para assinar digitalmente
+                                </a>
+                                <p class="text-muted small">
+                                    Desenhe a assinatura no quadro, baixe o PNG e use &quot;Enviar imagem&quot; acima, ou envie a imagem aqui após desenhar.
+                                </p>
+                            </div>
+                        </page>
                     </notebook>
                 </sheet>
                 

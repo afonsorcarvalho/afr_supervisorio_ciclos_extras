@@ -54,35 +54,54 @@ class ReportLaudoLiberacao(models.AbstractModel):
             for ciclo in ciclos:
                 material_lines |= ciclo.material_lines_ids
         
-        # Gera QR code para cada ciclo
+        # Gera QR code e link curto para cada ciclo (verificação de autenticidade)
+        ShortLink = self.env['afr.laudo.short.link']
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         qr_codes = {}
+        short_urls = {}
         for ciclo in ciclos:
             try:
-                # Gera o QR code apontando para a versão pública EXATA deste laudo.
-                # Para garantir que o público veja apenas os materiais selecionados no wizard,
-                # incluímos a lista de `material_line_ids` na URL e ela também é assinada no token.
                 selected_ids = material_lines.filtered(lambda l: l.ciclo_id.id == ciclo.id).ids
                 if not selected_ids:
-                    # Sem materiais (ou sem filtro). Não gera QR code para evitar link público ambíguo.
                     qr_codes[ciclo.id] = None
+                    short_urls[ciclo.id] = None
                     continue
 
-                public_url = ciclo.get_laudo_public_url(material_line_ids=selected_ids)
+                # Obtém ou cria link curto; QR code e relatório usam a URL curta
+                short_link = ShortLink.get_or_create_short_link(ciclo.id, selected_ids)
+                short_url = f"{base_url}/v/{short_link.short_code}"
                 qr_buffer = BytesIO()
-                qrcode.make(public_url.encode(), box_size=4).save(qr_buffer, optimise=True, format='PNG')
+                qrcode.make(short_url.encode(), box_size=4).save(qr_buffer, optimise=True, format='PNG')
                 img_str = base64.b64encode(qr_buffer.getvalue()).decode()
                 qr_codes[ciclo.id] = img_str
+                short_urls[ciclo.id] = short_url
             except Exception as e:
-                _logger.error(f"Erro ao gerar QR code para ciclo {ciclo.id}: {str(e)}")
+                _logger.error(f"Erro ao gerar QR code/link curto para ciclo {ciclo.id}: {str(e)}")
                 qr_codes[ciclo.id] = None
-        
-        # Retorna valores para o template
+                short_urls[ciclo.id] = None
+
+        # Assinatura: vinda do wizard (data) ou, em acesso público, sem assinatura
+        signature_image_b64 = data.get('signature_image_b64')
+        if data.get('signature_type') == 'auto' and not signature_image_b64:
+            company = self.env.company
+            if company and company.laudo_signature_default:
+                raw = company.laudo_signature_default
+                signature_image_b64 = base64.b64encode(raw).decode('utf-8') if isinstance(raw, bytes) else raw
+        signer_name = data.get('signer_name') or ''
+        signer_title = data.get('signer_title') or 'Garantia de qualidade'
+        signature_date = data.get('signature_date')
+
         return {
             'doc_ids': docids,
             'doc_model': 'afr.supervisorio.ciclos',
-            'docs': ciclos,  # ✅ Aqui que popula o 'docs' para o template!
-            'data': data,    # ✅ Passa o data para o template também
-            'material_lines_filtered': material_lines,  # ✅ Materiais já filtrados
-            'qr_codes': qr_codes,  # ✅ QR codes para cada ciclo
+            'docs': ciclos,
+            'data': data,
+            'material_lines_filtered': material_lines,
+            'qr_codes': qr_codes,
+            'short_urls': short_urls,
+            'signature_image_b64': signature_image_b64,
+            'signer_name': signer_name,
+            'signer_title': signer_title,
+            'signature_date': signature_date,
         }
 

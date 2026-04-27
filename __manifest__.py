@@ -19,6 +19,7 @@
         'views/materials_views.xml',
         'views/cycle_materials_lines_views.xml',
         'views/supervisorio_ciclos_extend_views.xml',
+        'views/res_company_views.xml',
         'views/menu_views.xml',
         'wizard/wizard_print_laudo_views.xml',
         'reports/supervisorio_ciclo_reports_inherit.xml',

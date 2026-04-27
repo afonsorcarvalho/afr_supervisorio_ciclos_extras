@@ -61,11 +61,15 @@
                         <h2 class="text-center">LAUDO DE LIBERAÇÃO DE PRODUTOS ESTERILIZADOS</h2>
                         <!-- <h3 class="text-center">VIA INDICADOR BIOLÓGICO PARA COMERCIALIZAÇÃO</h3> -->
 
-                        <!-- QR Code para autenticidade (canto superior direito) -->
+                        <!-- QR Code e link curto para autenticidade (canto superior direito) -->
                         <t t-set="qr_code_data" t-value="qr_codes.get(o.id)"/>
+                        <t t-set="short_url" t-value="short_urls.get(o.id)"/>
                         <div class="qr-code-container" t-if="qr_code_data">
                             <img t-attf-src="data:image/png;base64,{{qr_code_data}}" alt="QR Code Autenticidade"/>
                             <div class="qr-code-label">Verificar autenticidade</div>
+                            <div class="qr-code-link" t-if="short_url" style="font-size: 7px; word-break: break-all; margin-top: 3px; color: #333;">
+                                <t t-esc="short_url"/>
+                            </div>
                         </div>
                         
                         <!-- Dados básicos -->
@@ -293,18 +297,63 @@
                             </div>
                         </div>
 
-                        <!-- Assinatura / aprovação -->
+                        <!-- Assinatura: igual ao relatório Impressão de ciclos (afr.supervisorio.ciclos) quando assinado; senão wizard legado -->
                         <div class="row mt-5">
-                            <!-- <div class="col-6 text-left">
+                            <div class="col-6 text-left">
                                 <t t-if="o.notes">
-                                   * Observações:
-                                     <span t-field="o.notes" /><br/>
+                                    * Observações:
+                                    <span t-field="o.notes"/><br/>
                                 </t>
-                            </div> -->
-                            <div class="col-6 text-center">
-                                ________________________________________<br/>
-                                Garantia de qualidade<br/>
-                                Aprovação
+                            </div>
+                            <div class="col-6 text-center signature-block">
+                                <t t-if="o.is_signed">
+                                    <div t-if="o.signature_image" class="mb-2">
+                                        <img t-attf-src="data:image/png;base64,{{o.signature_image}}"
+                                             style="max-height:100px;max-width:100%;" alt="Assinatura"/>
+                                    </div>
+                                    <div class="mt-2 mb-2">
+                                        Garantia de qualidade / Aprovação
+                                    </div>
+                                    <div style="display:inline-block;max-width:100%;text-align:center;font-size:8px;">
+                                        <strong><span t-field="o.signature_employee_name"/></strong><br/>
+                                        <t t-if="o.signature_professional_documentation">
+                                            <span t-field="o.signature_professional_documentation"/><br/>
+                                        </t>
+                                        <t t-if="o.signature_professional_council or o.signature_professional_council_number">
+                                            <span t-field="o.signature_professional_council"/>
+                                            <t t-if="o.signature_professional_council_number">
+                                                <t t-if="o.signature_professional_council"> — </t>
+                                                <span t-field="o.signature_professional_council_number"/>
+                                            </t>
+                                            <br/>
+                                        </t>
+                                        <t t-if="o.signature_professional_cpf and not o.signature_professional_council_number">
+                                            CPF: <span t-field="o.signature_professional_cpf"/><br/>
+                                        </t>
+                                        <t t-if="o.signature_date">
+                                            Assinatura eletrônica em <span t-field="o.signature_date"/>
+                                        </t>
+                                    </div>
+                                </t>
+                                <t t-if="not o.is_signed">
+                                    <t t-if="signature_image_b64">
+                                        <img t-attf-src="data:image/png;base64,{{signature_image_b64}}" alt="Assinatura" class="signature-image" style="max-height: 60px; max-width: 220px; margin-bottom: 8px;"/>
+                                        <br/>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="signature-line">________________________________________</span><br/>
+                                    </t>
+                                    <span class="signer-title" t-esc="signer_title or 'Garantia de qualidade'"/>
+                                    <t t-if="signer_name">
+                                        <br/><span class="signer-name" t-esc="signer_name"/>
+                                    </t>
+                                    <t t-if="signature_date">
+                                        <br/><span class="signature-date">Data: <t t-esc="signature_date"/></span>
+                                    </t>
+                                    <t t-if="not signature_date and not signer_name and not signature_image_b64">
+                                        <br/>Aprovação
+                                    </t>
+                                </t>
                             </div>
                         </div>
 
