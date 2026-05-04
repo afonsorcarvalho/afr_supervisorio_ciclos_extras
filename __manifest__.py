@@ -16,6 +16,7 @@
     ],
     'data': [
         'security/ir.model.access.csv',
+        'data/mail_template_laudo.xml',
         'views/materials_views.xml',
         'views/cycle_materials_lines_views.xml',
         'views/supervisorio_ciclos_extend_views.xml',
