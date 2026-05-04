@@ -90,6 +90,8 @@ class ReportLaudoLiberacao(models.AbstractModel):
         signer_name = data.get('signer_name') or ''
         signer_title = data.get('signer_title') or 'Garantia de qualidade'
         signature_date = data.get('signature_date')
+        data_emissao = data.get('data_emissao')
+        data_liberacao = data.get('data_liberacao')
 
         return {
             'doc_ids': docids,
@@ -103,5 +105,7 @@ class ReportLaudoLiberacao(models.AbstractModel):
             'signer_name': signer_name,
             'signer_title': signer_title,
             'signature_date': signature_date,
+            'data_emissao': data_emissao,
+            'data_liberacao': data_liberacao,
         }
 

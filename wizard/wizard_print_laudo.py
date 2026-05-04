@@ -64,6 +64,17 @@ class WizardPrintLaudo(models.TransientModel):
         default=fields.Date.context_today,
         required=True,
     )
+    data_liberacao = fields.Date(
+        string='Data de liberação',
+        required=True,
+        help='Data de liberação impressa no laudo. Default: data da assinatura do responsável pelo ciclo.',
+    )
+    data_emissao = fields.Date(
+        string='Data de emissão do laudo',
+        default=fields.Date.context_today,
+        required=True,
+        help='Data de emissão impressa no laudo.',
+    )
 
     @api.depends('material_line_ids')
     def _compute_material_count(self):
@@ -76,6 +87,13 @@ class WizardPrintLaudo(models.TransientModel):
         ciclo_id = self.env.context.get('active_id')
         if ciclo_id:
             res['ciclo_id'] = ciclo_id
+            if 'data_liberacao' in fields_list and not res.get('data_liberacao'):
+                ciclo = self.env['afr.supervisorio.ciclos'].browse(ciclo_id)
+                sig_date = ciclo.signature_date
+                if sig_date:
+                    res['data_liberacao'] = fields.Date.to_date(sig_date)
+                else:
+                    res['data_liberacao'] = fields.Date.context_today(self)
         company = self.env.company
         if company:
             if 'signer_name' in fields_list and not res.get('signer_name'):
@@ -114,6 +132,8 @@ class WizardPrintLaudo(models.TransientModel):
             'signer_name': signer_name,
             'signer_title': signer_title,
             'signature_date': signature_date,
+            'data_emissao': self.data_emissao,
+            'data_liberacao': self.data_liberacao,
         }
 
     def action_print_laudo(self):

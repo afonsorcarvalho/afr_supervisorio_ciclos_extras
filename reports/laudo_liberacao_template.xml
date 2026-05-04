@@ -59,6 +59,11 @@
                     <div class="page">
                         <!-- Cabeçalho -->
                         <h2 class="text-center">LAUDO DE LIBERAÇÃO DE PRODUTOS ESTERILIZADOS</h2>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
                         <!-- <h3 class="text-center">VIA INDICADOR BIOLÓGICO PARA COMERCIALIZAÇÃO</h3> -->
 
                         <!-- QR Code e link curto para autenticidade (canto superior direito) -->
@@ -78,7 +83,7 @@
                                 <strong>Ciclo:</strong> <span t-field="o.name"/>
                             </div>
                             <div class="col-6">
-                                <strong>Cod. Carga:</strong> <span t-field="o.batch_number"/>
+                                <strong>Lote Ciclo:</strong> <span t-field="o.batch_number"/>
                             </div>
                         </div>
                             <div class="row">
@@ -105,11 +110,85 @@
                                 <strong>Ciclo selecionado:</strong> <span t-field="o.cycle_features_id"/>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Gás utilizado no processo:</strong> Óxido de Etileno
+                            </div>
+                        </div>
+
+                        
+
+                        <!-- Tipo de Análise e Método -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <p class="mb-2">
+                                    <strong>Tipo de Análise:</strong> Análise microbiológica relacionada à eficácia do processo de esterilização por óxido de etileno, utilizando indicador biológico.
+                                </p>
+                                <p class="mb-2">
+                                    <strong>Método:</strong> Esterilização efetiva mediante utilização de indicadores biológicos, incubados em incubadora apropriada, apresentando resultados satisfatórios (ausência de crescimento microbiano). Conforme preconizado em normas vigentes: RDC 291 de 2019, ISO 11135:2018 e ISO 11138-2:2016.
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Materiais filtrados (somente selecionados no wizard) -->
+                        <t t-set="show_materials" t-value="material_lines_filtered if material_lines_filtered else []"/>
+                        <div class="row mt-5" t-if="show_materials and len(show_materials) > 0">
+                            <div class="col-12">
+                                <h5 class="mb-3 text-center section-title">
+                                    MATERIAIS ESTERILIZADOS
+                                </h5>
+                                <table class="table table-bordered table-sm">
+                                    <thead style="background-color: #f8f9fa;">
+                                    <tr>
+                                            <th class="text-center">Item</th>
+                                            <th>Produto</th>
+                                            <th>Fabricante</th>
+                                            <th>Lote</th>
+                                            <th class="text-center">Qtd</th>
+                                            <th>Unidade</th>
+                                            <th>Validade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        <t t-set="item_num" t-value="0"/>
+                                        <t t-foreach="show_materials" t-as="mat">
+                                            <t t-set="item_num" t-value="item_num + 1"/>
+                                        <tr>
+                                                <td class="text-center"><t t-esc="item_num"/></td>
+                                                <td><span t-field="mat.material_descricao"/></td>
+                                                <td><span t-field="mat.fabricante_nome"/></td>
+                                                <td><span t-field="mat.lote"/></td>
+                                                <td class="text-center"><span t-field="mat.quantidade"/></td>
+                                                <td>
+                                                    <t t-if="mat.unidade == 'caixa'">Caixa</t>
+                                                    <t t-elif="mat.unidade == 'unidade'">Unidade</t>
+                                                    <t t-elif="mat.unidade == 'pacote'">Pacote</t>
+                                                    <t t-elif="mat.unidade == 'envelope'">Envelope</t>
+                                                    <t t-elif="mat.unidade == 'kit'">Kit</t>
+                                                <t t-else="">Outro</t>
+                                            </td>
+                                                <td>
+                                                    <t t-if="mat.validade"><span t-field="mat.validade"/></t>
+                                                    <t t-else="">Vide Fabricante</t>
+                                                </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                        <!-- Caso não haja materiais, mostra aviso -->
+                        <div class="row mt-5" t-if="not show_materials or len(show_materials) == 0">
+                                <div class="col-12">
+                                <div class="alert alert-warning text-center">
+                                    <strong>Atenção:</strong> Nenhum material foi selecionado para este laudo.
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Indicador biológico -->
-                        <div class="row mt-4" t-if="o.ib_lote">
+                        <div class="row mt-5" t-if="o.ib_lote">
                             <div class="col-12">
-                                <h5 class="mb-3">Indicador Biológico</h5>
+                                <h5 class="mb-3 text-center section-title">INDICADOR BIOLÓGICO</h5>
                             </div>
                         </div>
                         <div class="row" t-if="o.ib_lote">
@@ -137,7 +216,15 @@
                                 <strong>Resultado:</strong>
                             </div>
                             <div class="col-4">
-                                <t t-esc="o.ib_resultado"/>
+                                <t t-if="o.ib_resultado == 'negativo'">
+                                    <span style="color: #008000; font-weight: bold;">Negativo</span>
+                                </t>
+                                <t t-elif="o.ib_resultado == 'positivo'">
+                                    <span style="color: #FF0000; font-weight: bold;">Positivo</span>
+                                </t>
+                                <t t-else="">
+                                    <t t-esc="o.ib_resultado"/>
+                                </t>
                             </div>
                         </div>
                         <div class="row" t-if="o.ib_lote">
@@ -154,145 +241,33 @@
                                 <span t-field="o.ib_data_fim"/>
                                     </div>
                                     </div>
-
-                        <!-- Observações -->
-                        <div class="row mt-3">
+                        <div class="row" t-if="o.ib_lote">
                             <div class="col-12">
-                                <div class="row mt-2">
-                                    <div class="col-12" t-if="o.notes">
-                                        <strong>Observações:</strong>
-                                        <div t-field="o.notes"/>
-                                    </div>
-                                </div>
+                                <strong>Composição do indicador:</strong> Bacillus atrophaeus ATCC 9372, concentração de 10<sup>6</sup> UFC/unidade.
                             </div>
-                        </div>
-
-                        <!-- Materiais filtrados (somente selecionados no wizard) -->
-                        <t t-set="show_materials" t-value="material_lines_filtered if material_lines_filtered else []"/>
-                        <div class="row mt-4" t-if="show_materials and len(show_materials) > 0">
-                            <div class="col-12">
-                                <h5 class="mb-3 text-center section-title">
-                                    MATERIAIS ESTERILIZADOS
-                                </h5>
-                                <table class="table table-bordered table-sm">
-                                    <thead style="background-color: #f8f9fa;">
-                                    <tr>
-                                            <th class="text-center">Item</th>
-                                            <th>Produto</th>
-                                            <th>Fabricante</th>
-                                            <th>Lote</th>
-                                            <th class="text-center">Qtd</th>
-                                            <th>Unidade</th>
-                                            <!-- <th>Validade</th> -->
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                        <t t-set="item_num" t-value="0"/>
-                                        <t t-foreach="show_materials" t-as="mat">
-                                            <t t-set="item_num" t-value="item_num + 1"/>
-                                        <tr>
-                                                <td class="text-center"><t t-esc="item_num"/></td>
-                                                <td><span t-field="mat.material_descricao"/></td>
-                                                <td><span t-field="mat.fabricante_nome"/></td>
-                                                <td><span t-field="mat.lote"/></td>
-                                                <td class="text-center"><span t-field="mat.quantidade"/></td>
-                                                <td>
-                                                    <t t-if="mat.unidade == 'caixa'">Caixa</t>
-                                                    <t t-elif="mat.unidade == 'unidade'">Unidade</t>
-                                                    <t t-elif="mat.unidade == 'pacote'">Pacote</t>
-                                                    <t t-elif="mat.unidade == 'envelope'">Envelope</t>
-                                                    <t t-elif="mat.unidade == 'kit'">Kit</t>
-                                                <t t-else="">Outro</t>
-                                            </td>
-                                                <!-- <td><span t-field="mat.validade"/></td> -->
-                                        </tr>
-                                    </t>
-                                </tbody>
-                            </table>
-                            </div>
-                        </div>
-                        <!-- Caso não haja materiais, mostra aviso -->
-                        <div class="row mt-4" t-if="not show_materials or len(show_materials) == 0">
-                                <div class="col-12">
-                                <div class="alert alert-warning text-center">
-                                    <strong>Atenção:</strong> Nenhum material foi selecionado para este laudo.
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Estatísticas do ciclo -->
-                        <t t-set="cycle_stats" t-value="o.get_cycle_statistics_for_report()"/>
-                        <div class="row mt-3 mb-3" t-if="cycle_stats and cycle_stats.get('rows') and len(cycle_stats.get('rows')) > 0">
-                            <div class="col-12">
-                                 <h5 class="mb-3 text-center section-title">ESTATÍSTICAS DO CICLO</h5>
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-sm table-statistics">
-                                        <thead>
-                                            <tr>
-                                                <th rowspan="2">Fase</th>
-                                                <th rowspan="2">Duração(mm:ss)</th>
-                                                <t t-foreach="cycle_stats.get('variables')" t-as="v">
-                                                    <th class="text-center" t-att-colspan="3"><t t-esc="v"/></th>
-                                                </t>
-                                            </tr>
-                                            <tr>
-                                                <t t-foreach="cycle_stats.get('variables')" t-as="v">
-                                                    <th class="text-center">min</th>
-                                                    <th class="text-center">max</th>
-                                                    <th class="text-center">média</th>
-                                                </t>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <t t-foreach="cycle_stats.get('rows')" t-as="r">
-                                                <tr>
-                                                    <td t-esc="r.get('fase')"/>
-                                                    <td class="text-center" t-esc="(r.get('duracao') if r.get('duracao') else '-')"/>
-                                                    <t t-foreach="cycle_stats.get('variables')" t-as="v">
-                                                        <t t-set="m" t-value="r.get('metrics').get(v) if r.get('metrics') else {}"/>
-                                                        <td class="text-end" t-esc="(('%.2f' % m.get('min')) if (m is not None and m.get('min') is not None) else '-')"/>
-                                                        <td class="text-end" t-esc="(('%.2f' % m.get('max')) if (m is not None and m.get('max') is not None) else '-')"/>
-                                                        <td class="text-end" t-esc="(('%.2f' % m.get('media')) if (m is not None and m.get('media') is not None) else '-')"/>
-                                                    </t>
-                                                </tr>
-                                            </t>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Mensagem quando não há estatísticas -->
-                        <div class="row mt-3 mb-3" t-if="not cycle_stats or not cycle_stats.get('rows') or len(cycle_stats.get('rows')) == 0">
-                                <div class="col-12">
-                                <div class="alert alert-info text-center">
-                                    <em>Nenhuma estatística disponível para este ciclo.</em>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Gráfico do ciclo -->
-                        <div class="row mt-3 mb-1">
-                           <div class="col-12 text-center">
-                             <h5 class="mb-3 text-center section-title">GRÁFICO DO CICLO</h5>
-                            <t t-if="o.cycle_graph">
-                                <img class="mr-5" t-attf-src="data:image/png;charset=utf-8;base64,{{o.cycle_graph}}" width="80%"/>
-                                </t>
-                                <t t-else="">
-                                <p>Nenhum gráfico disponível para este ciclo.</p>
-                            </t>
-                           </div>
                         </div>
 
                         <!-- Conclusão normativa -->
-                        <div class="row mt-4">
+                        <div class="row mt-5">
                             <div class="col-12">
-                                <h5 class="mb-3 text-center section-title">CONCLUSÃO</h5>                        
+                                <h5 class="mb-3 text-center section-title">CONCLUSÃO</h5>
                                 <p>
-                                    Os materiais relacionados neste laudo ficam liberados para comercialização, 
-                                    considerando o resultado do indicador biológico (com registros anexos), os parâmetros
-                                    físicos demonstrados e a aderência às normas RDC 291/2019 (ANVISA), ISO 11135:2018 
-                                    e ISO 11138-2:2016, aqui documentados.
+                                    Com base no resultado satisfatório do indicador biológico e na validação do processo, incluindo o controle de resíduos de óxido de etileno, o material encontra-se esterilizado e liberado para comercialização.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Datas de liberação e emissão -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <p class="mb-1">
+                                    <strong>Data de liberação:</strong>
+                                    <t t-if="data_liberacao"><t t-esc="data_liberacao" t-options='{"widget": "date"}'/></t>
+                                    <t t-elif="o.signature_date"><span t-field="o.signature_date" t-options='{"widget": "date"}'/></t>
+                                </p>
+                                <p class="mb-1">
+                                    <strong>Data de emissão:</strong>
+                                    <t t-if="data_emissao"><t t-esc="data_emissao" t-options='{"widget": "date"}'/></t>
                                 </p>
                             </div>
                         </div>
@@ -311,9 +286,9 @@
                                         <img t-attf-src="data:image/png;base64,{{o.signature_image}}"
                                              style="max-height:100px;max-width:100%;" alt="Assinatura"/>
                                     </div>
-                                    <div class="mt-2 mb-2">
+                                    <!-- <div class="mt-2 mb-2">
                                         Garantia de qualidade / Aprovação
-                                    </div>
+                                    </div> -->
                                     <div style="display:inline-block;max-width:100%;text-align:center;font-size:8px;">
                                         <strong><span t-field="o.signature_employee_name"/></strong><br/>
                                         <t t-if="o.signature_professional_documentation">

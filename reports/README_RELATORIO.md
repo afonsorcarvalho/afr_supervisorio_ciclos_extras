@@ -2,207 +2,103 @@
 
 ## Descrição
 
-Este relatório foi desenvolvido para atender às necessidades de liberação de produtos esterilizados, seguindo padrões regulatórios e normativas técnicas.
+Relatório de liberação de produtos esterilizados, seguindo padrões regulatórios (RDC 291/2019, ISO 11135:2018, ISO 11138-2:2016). Gerado via wizard de seleção de materiais.
 
 ## Estrutura do Documento
 
-O relatório é composto por **duas partes principais**:
+### Cabeçalho
 
-### 1️⃣ LAUDO DE LIBERAÇÃO (Página Principal)
+- Título: "LAUDO DE LIBERAÇÃO DE PRODUTOS ESTERILIZADOS"
+- QR Code de autenticidade (canto superior direito, quando disponível)
 
-Documento principal formatado seguindo padrões de laudos técnicos oficiais.
+### Dados do Ciclo
 
-#### Seções do Laudo:
+- Ciclo / Lote Ciclo
+- Equipamento / Duração
+- Data início / Data fim
+- Status / Ciclo selecionado
+- Gás utilizado no processo: Óxido de Etileno
 
-**Cabeçalho**
-- Título: "LAUDO DE LIBERAÇÃO DOS PRODUTOS DESCARTÁVEIS VIA INDICADOR BIOLÓGICO PARA COMERCIALIZAÇÃO"
-- Procedimento de liberação
+### MATERIAIS ESTERILIZADOS
 
-**Identificação do Ciclo**
-- Número do Ciclo
-- Código da Carga
-- Equipamento utilizado
-- Data de Liberação
-- Tipo de Esterilização
-- Status do Ciclo
+Tabela com os materiais selecionados no wizard:
 
-**Produtos Esterilizados**
-Tabela detalhada contendo:
-- Item (numeração sequencial)
-- Produto/Descrição
-- Fabricante
-- Lote
-- Quantidade
-- Unidade (Caixa, Unidade, Pacote, Envelope, Kit, Outro)
-- Validade
+| Coluna | Descrição |
+|--------|-----------|
+| Item | Numeração sequencial |
+| Produto | Descrição do material |
+| Fabricante | Nome do fabricante |
+| Lote | Número do lote |
+| Qtd | Quantidade |
+| Unidade | Caixa / Unidade / Pacote / Envelope / Kit / Outro |
+| Validade | Data de validade ou "Vide Fabricante" se não informado |
 
-**Método de Esterilização**
-- Tipo de Análise
-- Método utilizado
-- Referências normativas (RDC 291/2019 ANVISA, ISO 11135:2018, ISO 11138-2:2016)
+> Quando nenhum material é selecionado, exibe alerta: "Nenhum material foi selecionado para este laudo."
 
-**Indicador Biológico**
-- Lote do Indicador
-- Marca
-- Modelo
-- Resultado
-- Início e Fim da Incubação
-- Composição (Bacillus atrophaeus ATCC 9372)
+### Tipo de Análise e Método
 
-**Conclusão**
-Texto automático que descreve:
-- Confirmação da esterilização eficaz
-- Dados do indicador biológico utilizado
-- Tempo de incubação (48 horas)
-- Resultado obtido
-- Declaração de liberação para comercialização
+- **Tipo de Análise:** Análise microbiológica para eficácia do processo por óxido de etileno
+- **Método:** Indicadores biológicos em incubadora, conforme RDC 291/2019, ISO 11135:2018 e ISO 11138-2:2016
 
-**Referência ao Anexo**
-Box destacado indicando que o relatório técnico completo está nas páginas seguintes.
+### INDICADOR BIOLÓGICO
 
-**Observações**
-Campo livre para observações adicionais do ciclo.
+Exibido apenas quando o ciclo tem dados de IB (`ib_lote` preenchido):
 
-**Rodapé**
-- Data de Emissão
-- Assinatura do Responsável Técnico
-- Nome do operador responsável (se disponível)
-- Informações do documento
+- Lote IB / Marca
+- Modelo / **Resultado** (verde = Negativo, vermelho = Positivo)
+- Início / Fim da Incubação
+- Composição: *Bacillus atrophaeus* ATCC 9372, concentração de 10⁶ UFC/unidade
 
----
+### CONCLUSÃO
 
-### 2️⃣ ANEXO - RELATÓRIO TÉCNICO (Páginas Seguintes)
+Texto normativo de liberação para comercialização.
 
-Relatório técnico completo do ciclo de esterilização em nova página.
+### Datas de Liberação e Emissão
 
-#### Conteúdo do Anexo:
+- **Data de liberação:** Preenchida no wizard (default: data da assinatura do responsável pelo ciclo)
+- **Data de emissão:** Preenchida no wizard (default: data de hoje)
 
-**Cabeçalho do Anexo**
-- Título: "ANEXO - RELATÓRIO TÉCNICO DO CICLO DE ESTERILIZAÇÃO"
-- Referência ao laudo principal
+### Observações
 
-**Informações Técnicas do Ciclo**
-- Equipamento e apelido
-- Duração
-- Ciclo selecionado
-- Datas de início e fim
-- Status
+Exibidas apenas antes da assinatura (campo `notes` do ciclo), se preenchidas.
 
-**Estatísticas do Ciclo**
-Tabela com estatísticas detalhadas por fase:
-- Fase
-- Duração
-- Variáveis monitoradas (min, max, média)
+### Assinatura
 
-**Gráfico do Ciclo**
-- Gráfico visual completo do ciclo de esterilização
+- Ciclo assinado digitalmente: exibe imagem da assinatura, nome, conselho e data da assinatura eletrônica
+- Ciclo não assinado: usa dados do wizard (imagem, nome, cargo, data)
 
-**Observações Técnicas**
-- Observações adicionais (se houver)
+### Registro Fotográfico
 
-**Registro Fotográfico** (se disponível)
-- Cada foto em página separada
-- Título e legenda
-- Data de captura
-- Numeração das fotos
+Cada foto (`fotos_ids`) em página separada, com título, legenda e data.
 
 ---
 
-## Tratamento de Casos Especiais
+## Como Gerar
 
-### Sem Materiais Registrados
-Quando não há materiais cadastrados no ciclo:
-- Exibe alerta destacado: "Nenhum material foi registrado para este ciclo de esterilização"
+1. No formulário do ciclo, clique em **"Gerar Laudo de Liberação"** (botão no header) ou "Imprimir" → "Laudo de Liberação de Produtos"
+2. No wizard: selecione materiais, confirme datas
+3. Clique em **"Gerar Laudo"**
 
-### Sem Indicador Biológico
-Quando não há dados de indicador biológico:
-- Exibe observação de atenção na conclusão
-- Recomenda verificação dos dados antes da liberação
-
-### Sem Estatísticas
-Quando não há estatísticas disponíveis:
-- Exibe mensagem informativa: "Nenhuma estatística disponível para este ciclo"
-
-### Sem Gráfico
-Quando não há gráfico disponível:
-- Exibe mensagem: "Nenhum gráfico disponível para este ciclo"
+**Nome do arquivo:** `Laudo_Liberacao_[NUMERO_DO_CICLO].pdf`
 
 ---
 
-## Formato e Estilo
+## Requisitos para Laudo Completo
 
-### Cores e Design
-- Cabeçalhos: Fundo cinza claro (#f8f9fa) com borda
-- Seções: Títulos em fundo cinza (#e9ecef)
-- Alertas: Amarelo (#fff3cd) para referências
-- Avisos: Amarelo (#ffc107) para atenção
-- Conclusão: Fundo cinza claro (#f8f9fa)
-
-### Tipografia
-- Títulos principais: 14px, negrito
-- Seções: 13px, negrito
-- Texto: 11-12px
-- Tabelas: 11px
-- Rodapé: 9-10px
-
-### Bordas e Espaçamentos
-- Bordas padrão: 1px sólido
-- Padding: 8-15px nas seções
-- Margens: 15-20px entre seções
-
----
-
-## Como Gerar o Relatório
-
-1. **No formulário do Ciclo:**
-   - Clique no botão "Imprimir" ou "Print"
-   - Selecione "Laudo de Liberação de Produtos"
-
-2. **Na lista de Ciclos:**
-   - Selecione o(s) ciclo(s) desejado(s)
-   - Clique em "Ação" → "Laudo de Liberação de Produtos"
-
-3. **Nome do Arquivo Gerado:**
-   - Formato: `Laudo_Liberacao_[NUMERO_DO_CICLO].pdf`
-   - Exemplo: `Laudo_Liberacao_CIC-2025-001.pdf`
-
----
-
-## Requisitos
-
-Para que o relatório seja completo, recomenda-se:
-
-✅ Cadastrar materiais no sistema
-✅ Vincular materiais ao ciclo com todas as informações (lote, validade, etc.)
-✅ Registrar dados do indicador biológico
-✅ Garantir que o ciclo tenha estatísticas e gráficos
-✅ Adicionar observações quando necessário
+- Materiais cadastrados e vinculados ao ciclo (com lote, validade)
+- Dados do indicador biológico preenchidos
+- Ciclo assinado (ou assinatura configurada na empresa)
 
 ---
 
 ## Conformidade Regulatória
 
-O relatório foi desenvolvido considerando:
-
-- **RDC 291/2019 ANVISA** - Regulamento técnico para esterilização
-- **ISO 11135:2018** - Esterilização de produtos para saúde - Óxido de etileno
-- **ISO 11138-2:2016** - Indicadores biológicos
+- **RDC 291/2019 ANVISA** — Regulamento técnico para esterilização
+- **ISO 11135:2018** — Esterilização por óxido de etileno
+- **ISO 11138-2:2016** — Indicadores biológicos
 
 ---
 
-## Observações Importantes
+## Suporte
 
-⚠️ **Atenção:** Este laudo deve ser assinado por responsável técnico qualificado antes da liberação oficial dos produtos.
-
-⚠️ **Validação:** Sempre verifique se os dados do indicador biológico estão completos antes de gerar o laudo final.
-
-⚠️ **Rastreabilidade:** O número do ciclo garante a rastreabilidade completa dos produtos esterilizados.
-
----
-
-## Suporte Técnico
-
-Para dúvidas ou sugestões sobre o relatório, contate:
-- **AFR Sistemas**
-- Website: https://www.afrsistemas.com.br
-
+**AFR Sistemas** — https://www.afrsistemas.com.br
