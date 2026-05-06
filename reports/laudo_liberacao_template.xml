@@ -383,18 +383,24 @@
                                                     <td class="font-weight-bold bg-light">Data:</td>
                                                     <td><span t-field="foto.data_criacao"/></td>
                                                 </tr>
+                                                <tr  class="text-center"><td colspan="2">
+                                                    <img t-if="foto.imagem" t-attf-src="data:image/png;base64,{{foto.imagem}}"
+                                                     style="width: 100%; height: auto; max-height: 230cm; border: 1px solid #ddd; background: white;"
+                                                     t-att-alt="foto.titulo"/>
+                                                </td></tr>
+                                                <tr class="text-center"><td colspan="2"> <small>
+                                                Foto <span t-esc="foto_index + 1"/> de <span t-esc="len(o.fotos_ids)"/>
+                                            </small></td></tr>
                                             </table>
                                         </div>
                                     </div>
                                     
-                                    <div class="row mt-4">
+                                    <!-- <div class="row mt-4">
                                         <div class="col-12 text-center">
-                                            <img t-if="foto.imagem" t-attf-src="data:image/png;base64,{{foto.imagem}}"
-                                                 style="width: 100%; height: auto; max-height: 230cm; border: 1px solid #ddd; background: white;"
-                                                 t-att-alt="foto.titulo"/>
+                                            
                                         </div>
                                         
-                                    </div>
+                                    </div> -->
                                     
                                     <!-- <div class="row mt-3">
                                         <div class="col-12 text-center text-muted">
