@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <odoo>
-<!-- Ação server para abrir wizard do laudo -->
+    <!-- Paper format para o Laudo de Liberação -->
+    <record id="paperformat_laudo_liberacao" model="report.paperformat">
+        <field name="name">Laudo de Liberação A4</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">10</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- Ação server para abrir wizard do laudo -->
     <record id="action_open_wizard_laudo" model="ir.actions.server">
         <field name="name">Laudo de Liberação de Produtos</field>
         <field name="model_id" ref="afr_supervisorio_ciclos.model_afr_supervisorio_ciclos"/>
