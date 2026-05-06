@@ -385,7 +385,7 @@
                                                 </tr>
                                                 <tr  class="text-center"><td colspan="2">
                                                     <img t-if="foto.imagem" t-attf-src="data:image/png;base64,{{foto.imagem}}"
-                                                     style="width: 100%; height: auto; max-height: 230cm; border: 1px solid #ddd; background: white;"
+                                                     style="width: 100%; max-height: 230cm; border: 1px solid #ddd; background: white;"
                                                      t-att-alt="foto.titulo"/>
                                                 </td></tr>
                                                 <tr class="text-center"><td colspan="2"> <small>
