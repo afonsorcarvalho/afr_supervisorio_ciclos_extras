@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <odoo>
+<!-- Ação server para abrir wizard do laudo -->
+    <record id="action_open_wizard_laudo" model="ir.actions.server">
+        <field name="name">Laudo de Liberação de Produtos</field>
+        <field name="model_id" ref="afr_supervisorio_ciclos.model_afr_supervisorio_ciclos"/>
+        <field name="binding_model_id" ref="afr_supervisorio_ciclos.model_afr_supervisorio_ciclos"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_print_laudo_wizard()</field>
+    </record>
     <!-- Ação do Report do Laudo -->
     <record id="report_laudo_liberacao_action" model="ir.actions.report">
         <field name="name">Laudo de Liberação de Produtos</field>
@@ -388,15 +397,7 @@
         </t>
     </template>
 
-    <!-- Ação server para abrir wizard do laudo -->
-    <record id="action_open_wizard_laudo" model="ir.actions.server">
-        <field name="name">Laudo de Liberação de Produtos</field>
-        <field name="model_id" ref="afr_supervisorio_ciclos.model_afr_supervisorio_ciclos"/>
-        <field name="binding_model_id" ref="afr_supervisorio_ciclos.model_afr_supervisorio_ciclos"/>
-        <field name="binding_view_types">form</field>
-        <field name="state">code</field>
-        <field name="code">action = records.action_print_laudo_wizard()</field>
-    </record>
+    
 
 </odoo>
 
