@@ -383,10 +383,10 @@
                                                     <td class="font-weight-bold bg-light">Data:</td>
                                                     <td><span t-field="foto.data_criacao"/></td>
                                                 </tr>
-                                                <tr  class="text-center"><td colspan="2">
+                                                <tr class="text-center"><td colspan="2" style="padding:0;">
                                                     <img t-if="foto.imagem" t-attf-src="data:image/png;base64,{{foto.imagem}}"
-                                                     style="width: 100%; max-height: 230cm; border: 1px solid #ddd; background: white;"
-                                                     t-att-alt="foto.titulo"/>
+                                                         style="max-width:100%; max-height:195mm; width:auto; height:auto; display:block; margin:0 auto; border: 1px solid #ddd; background: white;"
+                                                         t-att-alt="foto.titulo"/>
                                                 </td></tr>
                                                 <tr class="text-center"><td colspan="2"> <small>
                                                 Foto <span t-esc="foto_index + 1"/> de <span t-esc="len(o.fotos_ids)"/>
