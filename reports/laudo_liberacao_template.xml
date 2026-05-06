@@ -396,13 +396,13 @@
                                         
                                     </div>
                                     
-                                    <div class="row mt-3">
+                                    <!-- <div class="row mt-3">
                                         <div class="col-12 text-center text-muted">
                                             <small>
                                                 Foto <span t-esc="foto_index + 1"/> de <span t-esc="len(o.fotos_ids)"/>
                                             </small>
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </t>
                         </t>
