@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <odoo>
+    <!-- Ação do Report do Laudo -->
+    <record id="report_laudo_liberacao_action" model="ir.actions.report">
+        <field name="name">Laudo de Liberação de Produtos</field>
+        <field name="model">afr.supervisorio.ciclos</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">afr_supervisorio_ciclos_extras.report_laudo_liberacao_template</field>
+        <field name="report_file">afr_supervisorio_ciclos_extras.report_laudo_liberacao_template</field>
+        <field name="print_report_name">'Laudo_Liberacao_%s' % (object.name)</field>
+        <field name="paperformat_id" ref="afr_supervisorio_ciclos_extras.paperformat_laudo_liberacao"/>
+    </record>
+    
     <!-- Template completo do Laudo de Liberação (standalone, sem inherit para evitar problemas de main) -->
     <template id="report_laudo_liberacao_template">
         <t t-call="web.html_container">
@@ -376,17 +388,6 @@
         </t>
     </template>
 
-    <!-- Ação do Report do Laudo -->
-    <record id="report_laudo_liberacao_action" model="ir.actions.report">
-        <field name="name">Laudo de Liberação de Produtos</field>
-        <field name="model">afr.supervisorio.ciclos</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">afr_supervisorio_ciclos_extras.report_laudo_liberacao_template</field>
-        <field name="report_file">afr_supervisorio_ciclos_extras.report_laudo_liberacao_template</field>
-        <field name="print_report_name">'Laudo_Liberacao_%s' % (object.name)</field>
-        <field name="paperformat_id" ref="afr_supervisorio_ciclos_extras.paperformat_laudo_liberacao"/>
-    </record>
-    
     <!-- Ação server para abrir wizard do laudo -->
     <record id="action_open_wizard_laudo" model="ir.actions.server">
         <field name="name">Laudo de Liberação de Produtos</field>
