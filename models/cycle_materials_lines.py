@@ -67,6 +67,12 @@ class CycleMaterialsLines(models.Model):
         string='Validade',
         help='Data de validade do material'
     )
+
+    vide_fabricante = fields.Boolean(
+        string='Vide Fabricante',
+        default=False,
+        help='Marcar quando a validade é determinada pelo fabricante (não há data fixa)'
+    )
     
     # Campos relacionados para facilitar visualização
     ciclo_nome = fields.Char(

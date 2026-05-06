@@ -16,18 +16,19 @@
                     </div>
                     <group>
                         <group>
-                            <field name="ciclo_id" 
+                            <field name="ciclo_id"
                                    options="{'no_create': True, 'no_create_edit': True}"/>
-                            <field name="material_id" 
+                            <field name="material_id"
                                    options="{'no_create': True, 'no_create_edit': True}"/>
                             <field name="quantidade"/>
                             <field name="unidade"/>
                         </group>
                         <group>
                             <field name="lote"/>
-                            <field name="fabricante_id" 
+                            <field name="fabricante_id"
                                    options="{'no_create': True, 'no_create_edit': True}"/>
-                            <field name="validade"/>
+                            <field name="vide_fabricante"/>
+                            <field name="validade" attrs="{'invisible': [('vide_fabricante', '=', True)]}"/>
                         </group>
                     </group>
                 </sheet>
@@ -47,7 +48,8 @@
                 <field name="unidade"/>
                 <field name="lote"/>
                 <field name="fabricante_id"/>
-                <field name="validade"/>
+                <field name="vide_fabricante" string="Vide Fab."/>
+                <field name="validade" attrs="{'invisible': [('vide_fabricante', '=', True)], 'required': [('vide_fabricante', '=', False)]}"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
