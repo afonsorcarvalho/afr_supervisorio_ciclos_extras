@@ -1,6 +1,6 @@
 {
     'name': 'Supervisório Ciclos - Materiais',
-    'version': '16.0.1.0.0',
+    'version': '16.0.1.1.0',
     'category': 'Manufacturing',
     'summary': 'Módulo para gerenciamento de materiais esterilizados em ciclos',
     'description': """

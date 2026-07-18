@@ -38,6 +38,7 @@
                             <field name="fabricante_id"/>
                             <field name="vide_fabricante" string="Vide Fab."/>
                             <field name="validade" attrs="{'invisible': [('vide_fabricante', '=', True)]}"/>
+                            <field name="status"/>
                         </tree>
                         <form>
                             <group>
@@ -51,6 +52,7 @@
                                     <field name="fabricante_id"/>
                                     <field name="vide_fabricante"/>
                                     <field name="validade" attrs="{'invisible': [('vide_fabricante', '=', True)]}"/>
+                                    <field name="status"/>
                                 </group>
                             </group>
                         </form>

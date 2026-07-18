@@ -27,6 +27,7 @@
                                     <th class="text-center">Qtd</th>
                                     <th>Unidade</th>
                                     <th>Validade</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -50,6 +51,11 @@
                                         <td>
                                             <t t-if="mat.validade"><span t-field="mat.validade"/></t>
                                             <t t-else="">Vide Fabricante</t>
+                                        </td>
+                                        <td>
+                                            <t t-if="mat.status == 'retem'">Retém</t>
+                                            <t t-elif="mat.status == 'residuo'">Resíduo</t>
+                                            <t t-else="">-</t>
                                         </td>
                                     </tr>
                                 </t>

@@ -73,6 +73,15 @@ class CycleMaterialsLines(models.Model):
         default=False,
         help='Marcar quando a validade é determinada pelo fabricante (não há data fixa)'
     )
+
+    # Status do material (opcional)
+    status = fields.Selection([
+        ('retem', 'Retém'),
+        ('residuo', 'Resíduo'),
+    ],
+        string='Status',
+        help='Status do material (opcional): retém ou resíduo'
+    )
     
     # Campos relacionados para facilitar visualização
     ciclo_nome = fields.Char(
